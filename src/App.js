@@ -1,55 +1,60 @@
 import React from 'react';
 import './App.css';
-import {Button, Card} from 'react-bootstrap'
+import { Button } from 'semantic-ui-react'
+import {Card, Icon, Image} from 'semantic-ui-react'
 
-//TODO: replace with actual username
+
 const GITHUB_USER = "https://api.github.com/users/BrittBannister"
 
-//const GITHUB_USER = (githubUserName) => 'https://api.github.com/users/${githubuserName}
 
 class App extends React.Component {
   state = {
     users: {},
     active: false
   }
-  
-    handleTooggle = (evt) => {
+
+    handleTooggle = () => {
+      console.log('it works')
       if(this.state.active === false) {
-        this.setState({active: false})
+        fetch(GITHUB_USER)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data)
+          this.setState({
+            user: data,
+            active: true
+          })
+        })
       } else {
-        this.setState({active: true})
+        // this.setState({user: data, active: false})
+        this.setState({active: false})
       }
-      console.log('its working')
-      fetch(GITHUB_USER) //(GITHUB_USER ('ivey'))
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data)
-        this.setState({user: data, active: true})
-      })
     }
 
- 
-// TODO render avatar_url, name, 2 other pieces of info from them
-  render() {
-    return (
-      <>
-      <Button onClick = {this.handleTooggle}>Toggle Users.</Button>
-      {this.state.active === true && (
-        <Card>
-        <Card.Body>
-        {/* <img src = {this.state.user.avatar_url} alt = ''/> */}
-        <Card.Img variant = 'top' src = {this.state.user.avatar_url} />
-          <Card.Title>{this.state.user.login}</Card.Title>
-          <Card.Text>{this.state.user.bio}</Card.Text>
-          {/* <Card description = {this.state.user.bio} /> */}
-        </Card.Body>
-         
-        </Card>
-
-      )}
-      </>
-    )
+    render(){
+      return(
+        <React.Fragment>
+        <Button onClick = {this.handleTooggle}>Toggle</Button>
+        {this.state.active && (
+          <React.Fragment>
+          <Card>
+         <Image src = {this.state.user.avatar_url} />
+         <Card.Content>
+           <Card.Header>{this.state.user.name}</Card.Header>
+           <Card.Meta>{this.state.user.bio}</Card.Meta>
+           <br />
+           <Card.Meta>{this.state.user.location}</Card.Meta>
+         </Card.Content>
+        <Card.Content extra>
+          <Icon name = 'user' />{this.state.user.followers}{' '}followers
+        </Card.Content>
+       </Card>
+        </React.Fragment>
+        )}
+        </React.Fragment>
+      )
+    }
   }
-}
+  export default App
+ 
 
-export default App;
